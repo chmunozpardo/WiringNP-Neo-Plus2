@@ -74,7 +74,7 @@ char *usage = "Usage: gpio -v\n"
 	      "       gpio pwmc <divider> \n"
 	      "       gpio load spi/i2c\n"
 	      "       gpio i2cd/i2cdetect\n"
-	      "       gpio usbp high/low\n"    
+	      "       gpio usbp high/low\n"
 //	      "       gpio gbr <channel>\n"                     /*remove for BananaPro by LeMaker team*/
 //	      "       gpio gbw <channel> <value>" ;	// No trailing newline needed here.      /*remove for BananaPro by LeMaker team*/
 			;
@@ -153,7 +153,7 @@ static int moduleLoaded (char *modName)
 		modName="i2c_sunxi";
 	}
   /*end 2014.08.19*/
-	
+
   while (fgets (line, 80, fd) != NULL)
   {
     if (strncmp (line, modName, len) != 0)
@@ -187,12 +187,12 @@ static void doLoad (int argc, char *argv [])
   char cmd [80] ;
   char *file1, *file2 ;
   char args1 [32], args2 [32] ;
-	
+
   if (argc < 3)
     _doLoadUsage (argv) ;
 
   args1 [0] = args2 [0] = 0 ;
-	
+
   /*add for BananaPro by LeMaker team*/
 	if(BPRVER ==  piBoardRev())
 	{
@@ -307,7 +307,7 @@ static void doI2Cdetect (int argc, char *argv [])
   struct stat statBuf ;
 
 	/*add for BananaPro by LeMaker team*/
-	if(BPRVER == piBoardRev())   
+	if(BPRVER == piBoardRev())
 	{
 		if (stat (I2CDETECT, &statBuf) < 0)
 		{
@@ -382,7 +382,7 @@ static void doExports (int argc, char *argv [])
 
     if ((l = read (fd, buf, 16)) == 0)
       sprintf (buf, "%s", "?") ;
- 
+
     buf [l] = 0 ;
     if ((buf [strlen (buf) - 1]) == '\n')
       buf [strlen (buf) - 1] = 0 ;
@@ -453,7 +453,7 @@ void doExport (int argc, char *argv [])
   }
 
   pin = atoi (argv [2]) ;
-	
+
 /*add for BananaPro by LeMaker team*/
  if (pin == 0)
   {
@@ -461,7 +461,7 @@ void doExport (int argc, char *argv [])
 	return ;
   }
  /*end 2014.08.19*/
- 
+
   mode = argv [3] ;
 
   if ((fd = fopen ("/sys/class/gpio/export", "w")) == NULL)
@@ -474,6 +474,7 @@ void doExport (int argc, char *argv [])
   fclose (fd) ;
 
   sprintf (fName, "/sys/class/gpio/gpio%d/direction", pin) ;
+  printf("Ctm = %s\n", fName);
   if ((fd = fopen (fName, "w")) == NULL)
   {
     fprintf (stderr, "%s: Unable to open GPIO direction interface for pin %d: %s\n", argv [0], pin, strerror (errno)) ;
@@ -572,14 +573,14 @@ void doEdge (int argc, char *argv [])
 
   pin  = atoi (argv [2]) ;
   mode = argv [3] ;
-	
+
 /*add for BananaPro by LeMaker team*/
 	if (pin==0)
   {
 	printf("%d is invalid pin,please check it over.\n",pin);
 	return ;
   }
-/*end 2014.08.19*/	
+/*end 2014.08.19*/
 
 // Export the pin and set direction to input
 
@@ -650,7 +651,7 @@ void doUnexport (int argc, char *argv [])
   }
 
   pin = atoi (argv [2]) ;
-	
+
   /*add for BananaPro by LeMaker team*/
 	if (pin==0)
   {
@@ -658,7 +659,7 @@ void doUnexport (int argc, char *argv [])
 	return ;
   }
 	/*end 2014.08.19*/
-	
+
   if ((fd = fopen ("/sys/class/gpio/unexport", "w")) == NULL)
   {
     fprintf (stderr, "%s: Unable to open GPIO export interface\n", argv [0]) ;
@@ -779,7 +780,7 @@ void doMode (int argc, char *argv [])
 // Undocumented
 /*remove for BananaPro by LeMaker team*/
 /*
-  else if (strcasecmp (mode, "alt0")    == 0) pinModeAlt (pin, 0b100) ;  
+  else if (strcasecmp (mode, "alt0")    == 0) pinModeAlt (pin, 0b100) ;
   else if (strcasecmp (mode, "alt1")    == 0) pinModeAlt (pin, 0b101) ;
   else if (strcasecmp (mode, "alt2")    == 0) pinModeAlt (pin, 0b110) ;
   else if (strcasecmp (mode, "alt3")    == 0) pinModeAlt (pin, 0b111) ;
@@ -893,7 +894,7 @@ static void doWriteByte (int argc, char *argv [])
  *********************************************************************************
  */
 
-void doRead (int argc, char *argv []) 
+void doRead (int argc, char *argv [])
 {
   int pin, val ;
 
@@ -916,7 +917,7 @@ void doRead (int argc, char *argv [])
  *********************************************************************************
  */
 
-void doAread (int argc, char *argv []) 
+void doAread (int argc, char *argv [])
 {
   if (argc != 3)
   {
@@ -1139,7 +1140,7 @@ int main (int argc, char *argv [])
     else
     {
       printf ("Banana Pro Details:\n") ;
-      printf ("  Type: %s, Revision: %s, Memory: %dMB, Maker: %s %s\n", 
+      printf ("  Type: %s, Revision: %s, Memory: %dMB, Maker: %s %s\n",
 	  piModelNames [model], piRevisionNames [rev], mem, piMakerNames [maker], overVolted ? "[OV]" : "") ;
     }
     return 0 ;

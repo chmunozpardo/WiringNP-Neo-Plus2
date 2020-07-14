@@ -345,7 +345,7 @@ static int pinToGpio [64] ={
      65,  66, //13, 14
     198, 199, //15, 16
       4,   5, //17, 18
-     17, 235, //19, 20
+     17, 363, //19, 20
      -1,   1, //21, 22
      -1,  -1, //23, 24
 
@@ -479,7 +479,7 @@ static int physToPin [64] = //return wiringPI pin
 };
 
 // pins available on pin out by banks
-static int BP_PIN_MASK[8][32] = //[BANK]  [INDEX]
+static int BP_PIN_MASK[12][32] = //[BANK]  [INDEX]
 {
     { 0,  1,  2,  3,  4,  5,  6,  7,  8,  9, -1, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,}, //PA
     {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,}, //PB
@@ -488,6 +488,10 @@ static int BP_PIN_MASK[8][32] = //[BANK]  [INDEX]
     {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,}, //PE
     {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,}, //PF
     {-1, -1, -1, -1, -1, -1,  6,  7,  8,  9, -1, 11, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,}, //PG
+    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,}, //PH
+    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,}, //PI
+    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,}, //PJ
+    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,}, //PK
     {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 11, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,}, //PL
 };
 
@@ -672,6 +676,7 @@ int sunxi_get_gpio_mode(int pin) {
     int offset = ((index - ((index >> 3) << 3)) << 2);
     uint32_t reval = 0;
     uint32_t phyaddr = SUNXI_GPIO_BASE + (bank * 36) + ((index >> 3) << 2);
+    if(pin >= 352) phyaddr = SUNXI_GPIO_BASE_PL + ((index >> 3) << 2);
     if (wiringPiDebug)
         printf("func:%s pin:%d,  bank:%d index:%d phyaddr:0x%x\n", __func__, pin, bank, index, phyaddr);
     if (BP_PIN_MASK[bank][index] != -1) {
@@ -695,7 +700,7 @@ void sunxi_set_gpio_mode(int pin, int mode) {
     int index = pin - (bank << 5);
     int offset = ((index - ((index >> 3) << 3)) << 2);
     uint32_t phyaddr = SUNXI_GPIO_BASE + (bank * 36) + ((index >> 3) << 2);
-    if(pin > 224) phyaddr = SUNXI_GPIO_BASE_PL + ((index >> 3) << 2);
+    if(pin >= 352) phyaddr = SUNXI_GPIO_BASE_PL + ((index >> 3) << 2);
     if (wiringPiDebug)
         printf("func:%s pin:%d, MODE:%d bank:%d index:%d phyaddr:0x%x\n", __func__, pin, mode, bank, index, phyaddr);
     if (BP_PIN_MASK[bank][index] != -1) {
@@ -752,7 +757,7 @@ void sunxi_digitalWrite(int pin, int value) {
     int bank = pin >> 5;
     int index = pin - (bank << 5);
     uint32_t phyaddr = SUNXI_GPIO_BASE + (bank * 36) + 0x10; // +0x10 -> data reg
-    if(pin > 224) phyaddr = SUNXI_GPIO_BASE_PL + 0x10;
+    if(pin >= 352) phyaddr = SUNXI_GPIO_BASE_PL + 0x10;
     if (wiringPiDebug)
         printf("func:%s pin:%d, value:%d bank:%d index:%d phyaddr:0x%x\n", __func__, pin, value, bank, index, phyaddr);
     if (BP_PIN_MASK[bank][index] != -1) {
@@ -784,6 +789,7 @@ int sunxi_digitalRead(int pin) {
     int bank = pin >> 5;
     int index = pin - (bank << 5);
     uint32_t phyaddr = SUNXI_GPIO_BASE + (bank * 36) + 0x10; // +0x10 -> data reg
+    if(pin >= 352) phyaddr = SUNXI_GPIO_BASE_PL + 0x10;
     if (wiringPiDebug)
         printf("func:%s pin:%d,bank:%d index:%d phyaddr:0x%x\n", __func__, pin, bank, index, phyaddr);
     if (BP_PIN_MASK[bank][index] != -1) {
@@ -806,6 +812,7 @@ void sunxi_pullUpDnControl(int pin, int pud) {
     int sub = index >> 4;
     int sub_index = index - 16 * sub;
     uint32_t phyaddr = SUNXI_GPIO_BASE + (bank * 36) + 0x1c + sub * 4; // +0x10 -> pullUpDn reg
+    if(pin >= 352) phyaddr = SUNXI_GPIO_BASE_PL + 0x1c + sub * 4;
     if (wiringPiDebug)
         printf("func:%s pin:%d,bank:%d index:%d sub:%d phyaddr:0x%x\n", __func__, pin, bank, index, sub, phyaddr);
     if (BP_PIN_MASK[bank][index] != -1) { //PI13~PI21 need check again
@@ -1951,7 +1958,6 @@ int wiringPiSetup(void) {
         return wiringPiFailure(WPI_ALMOST, "wiringPiSetup: mmap (GPIO) failed: %s\n", strerror(errno));
 
     // PWM
-
     pwm = (uint32_t *) mmap(0, BLOCK_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, fd, GPIO_PWM_BP);
     if ((int32_t) pwm == -1)
         return wiringPiFailure(WPI_ALMOST, "wiringPiSetup: mmap (PWM) failed: %s\n", strerror(errno));
