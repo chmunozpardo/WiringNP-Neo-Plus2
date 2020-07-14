@@ -4,7 +4,7 @@ This is a fork of the WiringNP library for NanoPi Neo Plus2. It has minor modifi
 Currently supported boards:
 NanoPI Neo Plus2
 
-All pins are working just like the original WiringNP, except that GPIOs PA17 and PL17 can be accessed through Wiring Pi Gpios 19 and 20 respectively.
+All pins are working just like the original WiringNP, except that GPIOs PA17 and PL11 can be accessed through Wiring Pi Gpios 19 and 20 respectively.
 
 # Installation
 
